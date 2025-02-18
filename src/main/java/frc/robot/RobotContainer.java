@@ -86,7 +86,14 @@ public class RobotContainer {
         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
         // Add kinematics to ensure max speed is actually obeyed
         .setKinematics(DriveConstants.kDriveKinematics);
-
+/**
+ *   New autonmous plan is currently being developed in path finder. Measurments for code is in the constants file.
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
     // An example trajectory to follow. All units in meters.
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction

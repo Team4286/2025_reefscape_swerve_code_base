@@ -11,10 +11,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.OIConstants;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.XboxController;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -25,7 +27,27 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
+  /*
+   * This controller is not the same as the one in the robot container, that controller handles movement.
+   * This one should be used for button configuration only.
+   * If it is not working, delete this controller and we will figure out later on how to reconfigure it. 
+   */
+  private XboxController ControllerX = new XboxController(OIConstants.kDriverControllerPort);
+
+  /*
+   * Creates robot container
+   */
   private RobotContainer m_robotContainer;
+
+  /*
+   * Creates elevator object
+   */
+  private elevator_arm elevator;
+
+  // shuffle board boolean to check if elevator arm should be moving.
+
+  private boolean elevatorIsMoving;
+
 
   ShuffleboardTab tab = Shuffleboard.getTab("Imperial Robotics: 4286 Robot");
 
@@ -40,7 +62,14 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     Shuffleboard.selectTab("Imperial Robotics: 4286 Robot");
-    Shuffleboard.getTab("Imperial Robotics: 4286 Robot").add("Max Motor Speed Per Second", 4.8);
+    tab.add("Max Motor Speed Per Second", 4.8);
+
+    tab.add("Elevator is moving", elevatorIsMoving);
+
+
+
+    elevator = new elevator_arm(5);
+    
     
   }
 
@@ -102,7 +131,27 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+
+  /*
+   * Checks if button A or button B is pressed
+   */
+    while(ControllerX.getAButton()){
+      elevator.elevator_move(0.05);
+      elevatorIsMoving = true;
+    }
+    while(ControllerX.getBButton()){
+      elevator.elevator_move(-0.05);
+      elevatorIsMoving = true;
+    }
+    // emergency stop
+    elevator.stopElevator();
+
+    //
+    elevatorIsMoving = false;
+    
+  }
 
   @Override
   public void testInit() {

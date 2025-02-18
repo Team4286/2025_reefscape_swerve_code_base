@@ -29,9 +29,13 @@ public final class Constants {
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(26.5);
+
+    // original numbers where 26.5 inchs.
+    // our chassis configuration is a bit smaller than revs.
+
+    public static final double kTrackWidth = Units.inchesToMeters(23.5);
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(26.5);
+    public static final double kWheelBase = Units.inchesToMeters(23.5);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, kTrackWidth / 2),
@@ -75,6 +79,38 @@ public final class Constants {
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
   }
+
+  /* Download 2025 path planner: these are the specifications for the digital robot information.
+      * In path planner we have adjusted numbers that were not originally in the constants file.
+      * 
+      * All units in path planner are in the metric system, while our program is mainly written in imperial. 
+      * Numbers below have been converted or guessed.
+      * 
+      * Wheel radius = 0.038
+      * Drive Gearing = 4.71
+      * True Max = 4.8
+      * Bumper Width/length = 0.854
+      * 
+      * In accurate or we could not determine the number
+      * 
+      * ROBOT MOI = Wheel COF = 1.1
+      * Wheel COF = 1.1
+      * 
+      * Off set information: 
+      * 
+      * from one motor to the other it is : 23.5
+      * cut it in half: 11.75
+      * 
+      * Our temporary num(converted into meters): 0.298
+   * 
+   * We are using an arm this year, so we made a temporary rectangle to represent its location
+      * For the arm this year, the elevator is 12 inchs from the edge:
+      * converted to meters: 0.3048 (round to 0.305)
+      * Rectangle from center: (0.854/2)-0.305
+      * rectangle from: 0.122
+      *
+      * In addition to this, the rectangle is 0.854 in width
+   */
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
