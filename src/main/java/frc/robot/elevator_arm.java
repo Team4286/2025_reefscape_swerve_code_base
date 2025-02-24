@@ -2,6 +2,11 @@ package frc.robot;
 //  some possible needed imports; spark is a must. 
 
 import com.revrobotics.spark.SparkMax;
+
+
+import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants.OIConstants;
+
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -18,6 +23,8 @@ import com.revrobotics.RelativeEncoder;
  * 
  */
 public class elevator_arm {
+
+    public XboxController ControllerX;
 
     /*
      * constructor needs to assign the can id and complete the motor.
@@ -41,17 +48,25 @@ public class elevator_arm {
     // create absolute encoder ( finds what tooth we are on from zero.)
     private final AbsoluteEncoder positionEncoder;
 
+   
 
-    public elevator_arm(int sparkID){
+    public elevator_arm(int sparkID,XboxController ControllerX){
     
+        this.ControllerX=ControllerX;
         // creates motor can id and type
         // object information is SparkMax(int canId, motortype motortype)
         elevatorSpark = new SparkMax(sparkID, MotorType.kBrushless);
         // returns the absoulute encoder
         positionEncoder = elevatorSpark.getAbsoluteEncoder();
+
+      
+
+
        
     }
 
+    
+    
 
     /*
      * Method to push motor clockwise.
@@ -69,6 +84,22 @@ public class elevator_arm {
     public void stopElevator(){
 
         elevatorSpark.set(0);
+    }
+
+
+    public void controlElevation(double stepSpeed){
+        
+        if(ControllerX.getAButton()==true){
+            elevator_move(stepSpeed);
+          }
+          else if(ControllerX.getBButton()==true){
+            elevator_move(stepSpeed*-1);
+          }
+          // emergency stop
+          else{
+            stopElevator();
+          }
+      
     }
 
     

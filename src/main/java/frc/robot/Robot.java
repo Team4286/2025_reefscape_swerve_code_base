@@ -8,6 +8,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -17,6 +18,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
+
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -43,10 +46,12 @@ public class Robot extends TimedRobot {
    * Creates elevator object
    */
   private elevator_arm elevator;
+  private Intake intake;
 
-  // shuffle board boolean to check if elevator arm should be moving.
+  // check for alliance
 
-  private boolean elevatorIsMoving;
+
+  
 
 
   ShuffleboardTab tab = Shuffleboard.getTab("Imperial Robotics: 4286 Robot");
@@ -61,15 +66,22 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
+    //get alliance color
+
+    
+    //
+
     Shuffleboard.selectTab("Imperial Robotics: 4286 Robot");
     tab.add("Max Motor Speed Per Second", 4.8);
-
-    tab.add("Elevator is moving", elevatorIsMoving);
-
-
-
-    elevator = new elevator_arm(5);
+    tab.add("LeftY",m_robotContainer.m_driverController.getLeftY());
+    tab.add("LeftX",m_robotContainer.m_driverController.getLeftX());
+    tab.add("RightX",m_robotContainer.m_driverController.getRightX());
     
+
+
+
+    elevator = new elevator_arm(5,ControllerX);
+    intake = new Intake(-1,-2, ControllerX);               //Needs can Id  (intake is first, rotation is second)
     
   }
 
@@ -127,6 +139,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+   
   }
 
   /** This function is called periodically during operator control. */
@@ -137,20 +151,22 @@ public class Robot extends TimedRobot {
   /*
    * Checks if button A or button B is pressed
    */
-    while(ControllerX.getAButton()){
-      elevator.elevator_move(0.05);
-      elevatorIsMoving = true;
-    }
-    while(ControllerX.getBButton()){
-      elevator.elevator_move(-0.05);
-      elevatorIsMoving = true;
-    }
-    // emergency stop
-    elevator.stopElevator();
+    elevator.controlElevation(0.1);
 
-    //
-    elevatorIsMoving = false;
-    
+    /*
+     * Checks rotation, uses bummpers
+     */
+    intake.controlRotation(0.1);
+    /*
+     * Check launch, uses button X
+     */
+    intake.controlIntake(0.1);
+
+    /*Use in emergency, ONLY
+
+     * inTake.ROCKET();
+     */
+
   }
 
   @Override
