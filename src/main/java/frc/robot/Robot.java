@@ -8,15 +8,16 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
+//import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.OIConstants;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+//import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+//import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 
 
@@ -48,10 +49,10 @@ public class Robot extends TimedRobot {
   private elevator_arm elevator;
   private Intake intake;
 
-  // check for alliance
-
-
-  
+  // can ID
+  private int elevatorNum = 5;
+  private int rotateIntake =  6;
+  private int intakeWheels = 6; // not actual can id, need to set be set, 10 is a placeholder 
 
 
   ShuffleboardTab tab = Shuffleboard.getTab("Imperial Robotics: 4286 Robot");
@@ -71,17 +72,21 @@ public class Robot extends TimedRobot {
     
     //
 
+    // select the tab we want to update to
     Shuffleboard.selectTab("Imperial Robotics: 4286 Robot");
+    // max robot speed
     tab.add("Max Motor Speed Per Second", 4.8);
+    // viewing controller input
     tab.add("LeftY",m_robotContainer.m_driverController.getLeftY());
     tab.add("LeftX",m_robotContainer.m_driverController.getLeftX());
     tab.add("RightX",m_robotContainer.m_driverController.getRightX());
+   
     
 
 
 
-    elevator = new elevator_arm(5,ControllerX);
-    intake = new Intake(-1,-2, ControllerX);               //Needs can Id  (intake is first, rotation is second)
+    elevator = new elevator_arm(elevatorNum,ControllerX);
+    intake = new Intake(intakeWheels,rotateIntake, ControllerX);               //Needs can Id  (intake is first, rotation is second)
     
   }
 
@@ -151,16 +156,22 @@ public class Robot extends TimedRobot {
   /*
    * Checks if button A or button B is pressed
    */
-    elevator.controlElevation(0.1);
+    elevator.controlElevation(0.5);
+    
 
     /*
      * Checks rotation, uses bummpers
+     * 
+     * Right bumper is positive rotation
+     * 
+     * Left bumper is negative rotation
      */
-    intake.controlRotation(0.1);
+    intake.controlRotation(0.05);
     /*
-     * Check launch, uses button X
+     * Check launch, uses button X for positive, uses y button for negative 
+     * 
      */
-    intake.controlIntake(0.1);
+    intake.controlIntake(0.6);
 
     /*Use in emergency, ONLY
 

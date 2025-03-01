@@ -68,10 +68,10 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driverController, Button.kR1.value)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
+   new JoystickButton(m_driverController, Button.kR1.value)
+       .whileTrue(new RunCommand(
+           () -> m_robotDrive.setX(),
+           m_robotDrive));
   }
 
   /**
@@ -89,27 +89,52 @@ public class RobotContainer {
 /**
  *   New autonmous plan is currently being developed in path finder. Measurments for code is in the constants file.
  * 
+ * Original file
  * 
+ * Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+ *       // Start at the origin facing the +X direction
+ *       new Pose2d(0, 0, new Rotation2d(0)),
+ *        // Pass through these two interior waypoints, making an 's' curve path
+ *       List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+ *       // End 3 meters straight ahead of where we started, facing forward
+ *       new Pose2d(3, 0, new Rotation2d(0)),
+ *       config);
  * 
  * 
  * 
  */
-    // An example trajectory to follow. All units in meters.
+
+ // An example trajectory to follow. All units in meters.
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+           // Start at the origin facing the +X direction
+           new Pose2d(0, 0, new Rotation2d(0)),
+            // Pass through these two interior waypoints, making an 's' curve path
+           List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+           // End 3 meters straight ahead of where we started, facing forward
+           new Pose2d(3, 0, new Rotation2d(0)),
+           config);
+    
+
+// New 4286 trajectory to deposit one coral at the reef, coral information has not been implemented, and currently only drives to it
+// current certanty: needs to be tested
+    Trajectory toCoralTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
+        new Pose2d(8, 7.3, new Rotation2d(180)),
+        // Pass through the mid point, being 2 metters forward and 0.8 to the left
+        List.of(new Translation2d(6, 6.5)),
+        // End 2.7 meters straight ahead from the starting posistion, while also being 2 meters to the left
+        // now facing 60 degrees to the left, theoretically this should allow it to find the coral station if lined up at the furthers
+        // cage at the begining of auto
+        new Pose2d(5.3, 5.3, new Rotation2d(120)),
         config);
 
+        
     var thetaController = new ProfiledPIDController(
         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        exampleTrajectory,
+        toCoralTrajectory,
         m_robotDrive::getPose, // Functional interface to feed supplier
         DriveConstants.kDriveKinematics,
 
@@ -121,7 +146,7 @@ public class RobotContainer {
         m_robotDrive);
 
     // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+    m_robotDrive.resetOdometry(toCoralTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));

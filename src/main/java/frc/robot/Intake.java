@@ -1,11 +1,12 @@
 package frc.robot;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.AbsoluteEncoder;
+//import com.revrobotics.AbsoluteEncoder;
 
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
 public class Intake {
 
@@ -16,7 +17,9 @@ public class Intake {
     // spark max : sparkRotate pivots the overal intake/launch, we need two button key binds, that is a Neo brushless.
     // spark max : sparkLaunch launchs the coral, we will need one key bind that sends power, this is brushed (no encoder)
     private final SparkMax sparkRotate; 
-    private final SparkMax intakeSpark;
+    private final Spark intakeSpark;
+
+    
     
     //private final SparkMax intakeSpark;
 
@@ -25,9 +28,9 @@ public class Intake {
         this.xController=xController;
         // creates motor can id and type
         // object information is SparkMax(int canId, motortype motortype)
-        sparkRotate = new SparkMax(canRotation, MotorType.kBrushless);
+        sparkRotate = new SparkMax(canRotation,MotorType.kBrushless );
         // controls intake
-        intakeSpark = new SparkMax(canIntake, MotorType.kBrushed);
+        intakeSpark = new Spark(canIntake);
         // returns the absoulute encoder
     }
 
@@ -38,6 +41,7 @@ public class Intake {
     // rotates intake
     public void intake_move(double setspeed){
         sparkRotate.set(setspeed);
+        //System.out.println(sparkRotate.getOutputCurrent());
     }
 
     // ensures rotation halts
@@ -52,7 +56,7 @@ public class Intake {
             intake_move(stepSpeed);
         }
         else if(xController.getLeftBumperButton()==true){
-            intake_move(stepSpeed * -1);
+            intake_move((stepSpeed * -1)/2);
         }
         // emergency stop
         else{
@@ -85,6 +89,11 @@ public class Intake {
         if(xController.getXButton()){
             launch(stepSpeed);
         }
+
+        // go backwards at half speed for intake
+        else if(xController.getYButton()){
+            launch((stepSpeed*-1)/3);
+        }
         else{
             stopIntake();
         }
@@ -96,6 +105,7 @@ public class Intake {
      * SECRET METHOD, ONLY USE IN EMERGENCY
      * don't set to 1: cause that 100% full speed ahead.
      */
+
 
      public void ROCKET(){
         if(xController.getYButton()){

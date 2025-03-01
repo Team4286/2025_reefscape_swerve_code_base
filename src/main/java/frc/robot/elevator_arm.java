@@ -5,13 +5,12 @@ import com.revrobotics.spark.SparkMax;
 
 
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants.OIConstants;
 
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+//import com.revrobotics.spark.SparkBase.ControlType;
+//import com.revrobotics.spark.SparkBase.PersistMode;
+//import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.AbsoluteEncoder;
+//import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
 
@@ -46,7 +45,11 @@ public class elevator_arm {
 
     
     // create absolute encoder ( finds what tooth we are on from zero.)
-    private final AbsoluteEncoder positionEncoder;
+    private final RelativeEncoder positionEncoder;
+
+    //
+
+    private boolean isTestingGoToZero = false;
 
    
 
@@ -57,7 +60,7 @@ public class elevator_arm {
         // object information is SparkMax(int canId, motortype motortype)
         elevatorSpark = new SparkMax(sparkID, MotorType.kBrushless);
         // returns the absoulute encoder
-        positionEncoder = elevatorSpark.getAbsoluteEncoder();
+        positionEncoder = elevatorSpark.getEncoder();
 
       
 
@@ -65,9 +68,25 @@ public class elevator_arm {
        
     }
 
-    
-    
+    public void goToZero(){
+      double posistion = positionEncoder.getPosition();
+      while(posistion>=0){
+        elevatorSpark.set(0.05);
+        posistion = positionEncoder.getPosition();
+        isTestingGoToZero = false;
 
+      }
+      isTestingGoToZero = true;
+      elevatorSpark.set(0);
+    }
+
+    public double getPosistion(){
+      return positionEncoder.getPosition();
+    }
+    
+    public boolean getTestingToZero(){
+      return isTestingGoToZero;
+    }
     /*
      * Method to push motor clockwise.
      * Any speed used must be between 0.0 and 1.0
@@ -87,23 +106,32 @@ public class elevator_arm {
     }
 
 
+    // controlls elevator primary purpose, go up and down.
     public void controlElevation(double stepSpeed){
         
         if(ControllerX.getAButton()==true){
-            elevator_move(stepSpeed);
-          }
-          else if(ControllerX.getBButton()==true){
+            elevator_move(stepSpeed/2);
+        }
+        else if(ControllerX.getBButton()==true){
             elevator_move(stepSpeed*-1);
-          }
+        }
           // emergency stop
-          else{
+        else{
             stopElevator();
-          }
+        }
       
+
+
     }
 
+    // use for testing reset to zero
+    public void callForReset(){
+      if(ControllerX.getYButton()==true){
+        goToZero();
+      }
+    }
     
-
+    
 
     /*
      * If time allows and can be figured out, make an additional method called reset to zero.
