@@ -119,13 +119,13 @@ public class RobotContainer {
 // current certanty: needs to be tested
     Trajectory toCoralTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        new Pose2d(8, 7.3, new Rotation2d(180)),
+        new Pose2d(8, 7.3, new Rotation2d(0)),
         // Pass through the mid point, being 2 metters forward and 0.8 to the left
-        List.of(new Translation2d(6, 6.5)),
+        List.of(new Translation2d(10, 6.5)),
         // End 2.7 meters straight ahead from the starting posistion, while also being 2 meters to the left
         // now facing 60 degrees to the left, theoretically this should allow it to find the coral station if lined up at the furthers
         // cage at the begining of auto
-        new Pose2d(5.3, 5.3, new Rotation2d(120)),
+        new Pose2d(11.3, 5.3, new Rotation2d(120)),
         config);
 
         

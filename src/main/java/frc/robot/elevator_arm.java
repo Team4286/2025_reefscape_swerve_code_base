@@ -93,7 +93,7 @@ public class elevator_arm {
      */
     public void elevator_move(double setspeed){
         elevatorSpark.set(setspeed);
-
+        
     }
     
 

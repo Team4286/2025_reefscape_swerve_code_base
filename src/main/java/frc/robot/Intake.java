@@ -92,7 +92,7 @@ public class Intake {
 
         // go backwards at half speed for intake
         else if(xController.getYButton()){
-            launch((stepSpeed*-1)/3);
+            launch((stepSpeed*-1)/2);
         }
         else{
             stopIntake();

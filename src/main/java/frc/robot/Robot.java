@@ -156,7 +156,7 @@ public class Robot extends TimedRobot {
   /*
    * Checks if button A or button B is pressed
    */
-    elevator.controlElevation(0.5);
+    elevator.controlElevation(0.85);
     
 
     /*
@@ -166,7 +166,7 @@ public class Robot extends TimedRobot {
      * 
      * Left bumper is negative rotation
      */
-    intake.controlRotation(0.05);
+    intake.controlRotation(0.1);
     /*
      * Check launch, uses button X for positive, uses y button for negative 
      * 
