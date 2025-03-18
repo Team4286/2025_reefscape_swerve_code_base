@@ -10,8 +10,10 @@ package frc.robot;
 
 //import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 //import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 //import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -30,6 +32,8 @@ import edu.wpi.first.wpilibj.XboxController;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+
+  private Timer time = new Timer();
 
   /*
    * This controller is not the same as the one in the robot container, that controller handles movement.
@@ -55,7 +59,7 @@ public class Robot extends TimedRobot {
   private int intakeWheels = 6; // not actual can id, need to set be set, 10 is a placeholder 
 
 
-  ShuffleboardTab tab = Shuffleboard.getTab("Imperial Robotics: 4286 Robot");
+  //ShuffleboardTab tab = Shuffleboard.getTab("Imperial Robotics: 4286 Robot");
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -68,22 +72,23 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     //get alliance color
-
+    Data.Initialize();
     
     //
 
     // select the tab we want to update to
+    /* 
     Shuffleboard.selectTab("Imperial Robotics: 4286 Robot");
-    // max robot speed
-    tab.add("Max Motor Speed Per Second", 4.8);
-    // viewing controller input
-    tab.add("LeftY",m_robotContainer.m_driverController.getLeftY());
-    tab.add("LeftX",m_robotContainer.m_driverController.getLeftX());
-    tab.add("RightX",m_robotContainer.m_driverController.getRightX());
-   
     
-
-
+    // max robot speed
+    tab.addPersistent("Max Motor Speed Per Second", 4.8);
+    // viewing controller input
+    tab.addPersistent("LeftY",m_robotContainer.m_driverController.getLeftY());
+    tab.addPersistent("LeftX",m_robotContainer.m_driverController.getLeftX());
+    tab.addPersistent("RightX",m_robotContainer.m_driverController.getRightX());
+  
+    tab.addPersistent("DesiredRot ",m_robotContainer.m_driverController.getRightX() * DriveConstants.kMaxAngularSpeed);
+    */
 
     elevator = new elevator_arm(elevatorNum,ControllerX);
     intake = new Intake(intakeWheels,rotateIntake, ControllerX);               //Needs can Id  (intake is first, rotation is second)
@@ -118,6 +123,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+    time.start();
+
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
      * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
@@ -133,7 +140,27 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    
+    
+
+    if(time.get() < 9){
+      elevator.stopElevator();
+      intake.stopRotation();
+    }
+    else if (time.get() < 10){
+      elevator.elevator_move(0.2);
+      intake.intake_move(-0.1);
+    }
+    else if (time.get() < 13){
+      elevator.elevator_move(0.2);
+      intake.stopRotation();
+    }
+    else{
+      elevator.stopElevator();
+    }
+    
+  }
 
   @Override
   public void teleopInit() {
@@ -141,6 +168,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    time.stop();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -152,11 +180,23 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    
+    Data.Update();
+    if(ControllerX.getLeftStickButton()==true){
+      DriveConstants.kMaxSpeedMetersPerSecond = 2.4;
+      //DriveConstants.kMaxSpeedMetersPerSecond
 
+    }
+    else{
+      //DriveConstants.kMaxSpeedMetersPerSecond = 4.8;
+      DriveConstants.kMaxSpeedMetersPerSecond = Acceleration.rightTriggerBrake(DriveConstants.kMaxSpeedMetersPerSecondFINAL);
+    }
+    
+    
   /*
    * Checks if button A or button B is pressed
    */
-    elevator.controlElevation(0.85);
+    elevator.controlElevation(0.60);
     
 
     /*
@@ -166,7 +206,7 @@ public class Robot extends TimedRobot {
      * 
      * Left bumper is negative rotation
      */
-    intake.controlRotation(0.1);
+    intake.controlRotation(0.2);
     /*
      * Check launch, uses button X for positive, uses y button for negative 
      * 

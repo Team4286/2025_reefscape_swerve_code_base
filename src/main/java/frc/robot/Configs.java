@@ -15,7 +15,7 @@ public final class Configs {
             // Use module constants to calculate conversion factors and feed forward gain.
             double drivingFactor = ModuleConstants.kWheelDiameterMeters * Math.PI
                     / ModuleConstants.kDrivingMotorReduction;
-            double turningFactor = 2 * Math.PI/2; // take out divison by 2 to test turn rate
+            double turningFactor = 2 * Math.PI / 2; // take out divison by 2 to test turn rate
             double drivingVelocityFeedForward = 1 / ModuleConstants.kDriveWheelFreeSpeedRps;
 
             drivingConfig
@@ -32,7 +32,7 @@ public final class Configs {
                     .outputRange(-1, 1);
 
             turningConfig
-                    .idleMode(IdleMode.kBrake)
+                    .idleMode(IdleMode.kCoast)
                     .smartCurrentLimit(20);
             turningConfig.absoluteEncoder
                     // Invert the turning encoder, since the output shaft rotates in the opposite

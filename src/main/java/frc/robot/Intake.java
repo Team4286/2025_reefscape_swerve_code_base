@@ -87,12 +87,12 @@ public class Intake {
 
     public void controlIntake(double stepSpeed){
         if(xController.getXButton()){
-            launch(stepSpeed);
+            launch(Acceleration.leftTrigger(stepSpeed));
         }
 
         // go backwards at half speed for intake
         else if(xController.getYButton()){
-            launch((stepSpeed*-1)/2);
+            launch(Acceleration.leftTrigger(stepSpeed*-1)/2);
         }
         else{
             stopIntake();

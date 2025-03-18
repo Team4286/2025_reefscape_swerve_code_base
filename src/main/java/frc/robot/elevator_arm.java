@@ -36,7 +36,7 @@ public class elevator_arm {
      * If possible create a method that slowly resets the robot to encoder zero, this way if we use autonomous we
      * are able to set the robot down to its base posisiton before we move the elevator.
      */
-
+    
 
     // creates motor
     private final SparkMax elevatorSpark;
@@ -50,8 +50,6 @@ public class elevator_arm {
     //
 
     private boolean isTestingGoToZero = false;
-
-   
 
     public elevator_arm(int sparkID,XboxController ControllerX){
     
@@ -93,7 +91,6 @@ public class elevator_arm {
      */
     public void elevator_move(double setspeed){
         elevatorSpark.set(setspeed);
-        
     }
     
 
@@ -110,18 +107,17 @@ public class elevator_arm {
     public void controlElevation(double stepSpeed){
         
         if(ControllerX.getAButton()==true){
-            elevator_move(stepSpeed/2);
+            elevator_move(Acceleration.leftTrigger(stepSpeed));
         }
         else if(ControllerX.getBButton()==true){
-            elevator_move(stepSpeed*-1);
+            elevator_move(Acceleration.leftTrigger(stepSpeed *-1)/2);
         }
           // emergency stop
         else{
             stopElevator();
         }
       
-
-
+        
     }
 
     // use for testing reset to zero

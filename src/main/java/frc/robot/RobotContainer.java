@@ -44,20 +44,21 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-
+    
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
+
         new RunCommand(
             () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                true),
+                Drive.getLeftX(),
+                Drive.getLeftY(),
+                Drive.getRightX(),
+                false),
             m_robotDrive));
   }
-
+  
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by
@@ -68,7 +69,7 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-   new JoystickButton(m_driverController, Button.kR1.value)
+   new JoystickButton(m_driverController, XboxController.Button.kBack.value)
        .whileTrue(new RunCommand(
            () -> m_robotDrive.setX(),
            m_robotDrive));
@@ -125,7 +126,7 @@ public class RobotContainer {
         // End 2.7 meters straight ahead from the starting posistion, while also being 2 meters to the left
         // now facing 60 degrees to the left, theoretically this should allow it to find the coral station if lined up at the furthers
         // cage at the begining of auto
-        new Pose2d(11.3, 5.3, new Rotation2d(120)),
+        new Pose2d(11.3, 5.3, new Rotation2d(60)),
         config);
 
         

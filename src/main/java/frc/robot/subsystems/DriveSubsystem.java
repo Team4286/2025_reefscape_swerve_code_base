@@ -6,6 +6,9 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
+
+import java.nio.channels.AcceptPendingException;
+
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,6 +19,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
+import frc.robot.Acceleration;
+import frc.robot.Drive;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -43,6 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+  public static SwerveModuleState[] states = DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, 0));
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -115,9 +121,13 @@ public class DriveSubsystem extends SubsystemBase {
     // Convert the commanded speeds into the correct units for the drivetrain
     double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
     double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
-    System.out.println(xSpeedDelivered);
-    System.out.println(ySpeedDelivered);
+
+    //System.out.println(xSpeedDelivered);
+    //System.out.println(ySpeedDelivered);
+    
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
+
+    System.out.println(rotDelivered);
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
@@ -126,10 +136,15 @@ public class DriveSubsystem extends SubsystemBase {
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+
+    swerveModuleStates = Drive.getSwerve(xSpeed, ySpeed, rot);
+
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
+
+    states = swerveModuleStates;
   }
 
   /**
